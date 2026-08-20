@@ -25,3 +25,12 @@ pnpm-debug.log*
 Thumbs.db
 .gemini/
 .agents/
+
+# AI agent config files (not part of source code)
+AGENTS.md
+CLAUDE.md
+**/AGENTS.md
+**/CLAUDE.md
+
+# Local issue tracking and scratch files
+issue_*.md

@@ -1,0 +1,14 @@
+{
+  "name": "mynote-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run start:dev --workspace=apps/api\" \"npm run dev --workspace=apps/web\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

@@ -1,0 +1,158 @@
+// MyNote - Prisma Schema
+// Milestone 1: Fondasi & Autentikasi
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================
+// Enums
+// =====================
+
+enum CaptureStatus {
+  inbox
+  triaged
+}
+
+enum ResolvedType {
+  task
+  note
+  log
+  discarded
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  blocked
+  done
+}
+
+// =====================
+// Models
+// =====================
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  passwordHash  String
+  name          String
+  createdAt     DateTime       @default(now())
+  refreshTokens RefreshToken[]
+  captures      Capture[]
+  tasks         Task[]
+  notes         Note[]
+  dailyLogs     DailyLog[]
+  tags          Tag[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Capture {
+  id           String        @id @default(cuid())
+  userId       String
+  content      String
+  status       CaptureStatus @default(inbox)
+  resolvedType ResolvedType?
+  resolvedId   String?
+  createdAt    DateTime      @default(now())
+  triagedAt    DateTime?
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks        Task[]
+  notes        Note[]
+
+  @@index([userId])
+}
+
+model Task {
+  id              String     @id @default(cuid())
+  userId          String
+  title           String
+  description     String?
+  status          TaskStatus @default(todo)
+  dueDate         DateTime?
+  sourceCaptureId String?
+  completedAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceCapture   Capture?   @relation(fields: [sourceCaptureId], references: [id], onDelete: SetNull)
+  taskTags        TaskTag[]
+
+  @@index([userId])
+}
+
+model Note {
+  id              String   @id @default(cuid())
+  userId          String
+  title           String
+  content         String
+  sourceCaptureId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceCapture   Capture? @relation(fields: [sourceCaptureId], references: [id], onDelete: SetNull)
+  noteTags        NoteTag[]
+
+  @@index([userId])
+}
+
+model DailyLog {
+  id        String   @id @default(cuid())
+  userId    String
+  logDate   DateTime
+  did       String
+  blockers  String?
+  next      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, logDate])
+}
+
+model Tag {
+  id     String    @id @default(cuid())
+  userId String
+  name   String
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks  TaskTag[]
+  notes  NoteTag[]
+
+  @@unique([userId, name])
+}
+
+// Junction Table: Task <-> Tag (composite primary key)
+model TaskTag {
+  taskId String
+  tagId  String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, tagId])
+}
+
+// Junction Table: Note <-> Tag (composite primary key)
+model NoteTag {
+  noteId String
+  tagId  String
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([noteId, tagId])
+}

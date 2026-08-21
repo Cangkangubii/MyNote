@@ -8,4 +8,20 @@ const api = axios.create({
   withCredentials: true, // required for httpOnly refresh cookies
 });
 
+
+
+
+
 export default api;
+
+export const setToken = (token) => {
+  document.cookie = `accessToken=${token}; path=/; max-age=3600; SameSite=Lax`;
+};
+
+export const removeToken = () => {
+  document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+};
+
+
+
+

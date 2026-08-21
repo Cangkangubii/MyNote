@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "format": "prettier --write \"**/*.js\"",
-    "start": "babel-node index.js",
+    "start": "node index.js",
     "start:dev": "nodemon",
     "test": "jest",
     "test:cov": "jest --coverage",
@@ -17,10 +17,13 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/jwt": "^11.0.2",
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "cookie-parser": "^1.4.7",
     "prisma": "^6.19.3",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.2.0"
@@ -30,10 +33,14 @@
     "@babel/node": "7.29.0",
     "@babel/plugin-proposal-decorators": "7.29.0",
     "@babel/plugin-transform-runtime": "7.29.0",
+    "@babel/plugin-transform-typescript": "^7.29.7",
     "@babel/preset-env": "7.29.2",
     "@babel/register": "7.28.6",
     "@babel/runtime": "7.29.2",
     "@nestjs/testing": "^11.0.1",
+    "@swc-node/register": "^1.12.1",
+    "@swc/core": "^1.16.1",
+    "@swc/jest": "^0.2.39",
     "jest": "30.3.0",
     "nodemon": "3.1.14",
     "prettier": "3.8.3",
@@ -46,6 +53,26 @@
     ],
     "rootDir": "src",
     "testRegex": ".spec.js$",
-    "coverageDirectory": "../coverage"
+    "coverageDirectory": "../coverage",
+    "transform": {
+      "^.+\\.js$": [
+        "@swc/jest",
+        {
+          "jsc": {
+            "parser": {
+              "syntax": "typescript",
+              "decorators": true
+            },
+            "transform": {
+              "legacyDecorator": true
+            },
+            "target": "es2022"
+          },
+          "module": {
+            "type": "commonjs"
+          }
+        }
+      ]
+    }
   }
 }

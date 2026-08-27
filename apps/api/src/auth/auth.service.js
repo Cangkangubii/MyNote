@@ -15,7 +15,12 @@ const ACCESS_TOKEN_EXPIRES = process.env.JWT_ACCESS_EXPIRES || '15m';
 const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 @Injectable()
+@Dependencies(PrismaService, JwtService)
 export class AuthService {
+  constructor(prisma, jwtService) {
+    this.prisma = prisma;
+    this.jwtService = jwtService;
+  }
 
   async register(registerDto) {
     const { name, email, password } = registerDto;

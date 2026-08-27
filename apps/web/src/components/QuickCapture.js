@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import api from '@/lib/api';
 
-export default function QuickCapture({ onCreated, placeholder = "Tangkap ide cepat atau tugas baru... (Tekan Enter)" }) {
+export default function QuickCapture({ onCreated, placeholder = "Ketik ide cepat atau tugas baru... (Enter untuk simpan)" }) {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,27 +29,42 @@ export default function QuickCapture({ onCreated, placeholder = "Tangkap ide cep
   };
 
   return (
-    <div className="w-full bg-white rounded-xl shadow-xs border border-gray-200 p-4 transition-all focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-        <div className="flex-1 relative">
-          <input
-            type="text"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder={placeholder}
-            className="w-full px-3 py-2 text-sm bg-transparent border-0 focus:outline-hidden placeholder-gray-400"
-            disabled={loading}
-          />
+    <div className="pixel-window w-full bg-white">
+      <div className="pixel-titlebar bg-linear-to-r from-yellow-200 via-pink-200 to-purple-200">
+        <div className="flex items-center gap-2">
+          <span className="font-pixel text-[10px] text-slate-900 tracking-wider">
+            ★ QUICK CAPTURE PROMPT
+          </span>
         </div>
-        <button
-          type="submit"
-          disabled={loading || !content.trim()}
-          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-        >
-          {loading ? 'Menyimpan...' : 'Tangkap'}
-        </button>
-      </form>
-      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+        <div className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 bg-white border border-slate-900 rounded-xs inline-block"></span>
+          <span className="w-2.5 h-2.5 bg-yellow-300 border border-slate-900 rounded-xs inline-block"></span>
+          <span className="w-2.5 h-2.5 bg-pink-400 border border-slate-900 rounded-xs inline-block"></span>
+        </div>
+      </div>
+
+      <div className="p-4 bg-purple-50/40">
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+          <div className="flex-1">
+            <input
+              type="text"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder={placeholder}
+              className="w-full pixel-input text-sm"
+              disabled={loading}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading || !content.trim()}
+            className="pixel-btn pixel-btn-purple px-5 py-2 text-xs"
+          >
+            {loading ? 'Menyimpan...' : '⚡ Tangkap Ide'}
+          </button>
+        </form>
+        {error && <p className="mt-2 text-xs font-bold text-red-600">{error}</p>}
+      </div>
     </div>
   );
 }

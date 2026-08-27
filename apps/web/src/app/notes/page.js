@@ -6,11 +6,11 @@ import api from '@/lib/api';
 export default function NotesPage() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
+  const [viewMode, setViewMode] = useState('grid');
   const [selectedTag, setSelectedTag] = useState('');
   const [allTags, setAllTags] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [activeNote, setActiveNote] = useState(null); // null for new, note object for editing/viewing
+  const [activeNote, setActiveNote] = useState(null);
   const [previewMode, setPreviewMode] = useState(false);
   const [formData, setFormData] = useState({ title: '', content: '', tags: '' });
   const [submitting, setSubmitting] = useState(false);
@@ -97,41 +97,43 @@ export default function NotesPage() {
     }
   };
 
-  // Simple and safe markdown parser for bold, italic, code blocks, lists, and headers
   const renderMarkdown = (text) => {
     if (!text) return null;
     const lines = text.split('\n');
     return lines.map((line, idx) => {
       if (line.startsWith('### ')) {
-        return <h4 key={idx} className="font-bold text-base mt-2 mb-1">{line.replace('### ', '')}</h4>;
+        return <h4 key={idx} className="font-bold text-sm mt-2 mb-1 text-purple-900">{line.replace('### ', '')}</h4>;
       }
       if (line.startsWith('## ')) {
-        return <h3 key={idx} className="font-bold text-lg mt-3 mb-1">{line.replace('## ', '')}</h3>;
+        return <h3 key={idx} className="font-bold text-base mt-3 mb-1 text-purple-950">{line.replace('## ', '')}</h3>;
       }
       if (line.startsWith('# ')) {
-        return <h2 key={idx} className="font-bold text-xl mt-4 mb-2">{line.replace('# ', '')}</h2>;
+        return <h2 key={idx} className="font-pixel text-sm mt-4 mb-2 text-slate-900">{line.replace('# ', '')}</h2>;
       }
       if (line.startsWith('- ')) {
-        return <li key={idx} className="ml-4 list-disc text-sm">{line.replace('- ', '')}</li>;
+        return <li key={idx} className="ml-4 list-disc text-xs font-medium text-slate-800">{line.replace('- ', '')}</li>;
       }
       if (line.startsWith('```')) {
-        return <div key={idx} className="bg-gray-100 p-2 font-mono text-xs rounded my-1">{line.replace(/```/g, '')}</div>;
+        return <div key={idx} className="bg-slate-900 text-green-400 p-2.5 font-mono text-xs rounded-md my-1.5 border border-slate-700">{line.replace(/```/g, '')}</div>;
       }
       if (line.trim() === '') {
         return <div key={idx} className="h-2"></div>;
       }
-      return <p key={idx} className="text-sm leading-relaxed">{line}</p>;
+      return <p key={idx} className="text-xs leading-relaxed text-slate-800">{line}</p>;
     });
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Header & Action Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Header & Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Notes &amp; Knowledge Base</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Tulis ide bebas dan catatan panjang terstruktur dengan format Markdown.
+          <div className="inline-flex items-center gap-2 pixel-badge bg-pink-200 text-pink-950 mb-2">
+            <span>✎</span> NOTEBOOK &amp; SCROLLS
+          </div>
+          <h1 className="font-pixel text-lg sm:text-xl text-slate-900">Catatan &amp; Knowledge Base</h1>
+          <p className="text-xs text-slate-600 mt-1">
+            Simpan dokumen teks panjang dan artikel referensi menggunakan format Markdown.
           </p>
         </div>
 
@@ -141,7 +143,7 @@ export default function NotesPage() {
             <select
               value={selectedTag}
               onChange={(e) => setSelectedTag(e.target.value)}
-              className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+              className="pixel-input text-xs font-bold py-1.5"
             >
               <option value="">Semua Tag</option>
               {allTags.map((tag) => (
@@ -153,19 +155,19 @@ export default function NotesPage() {
           )}
 
           {/* Toggle View Mode */}
-          <div className="flex items-center bg-gray-200/70 p-1 rounded-lg">
+          <div className="flex items-center gap-1 bg-white p-1 border-2 border-slate-900 rounded-lg shadow-[2px_2px_0px_#0f172a]">
             <button
               onClick={() => setViewMode('grid')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
-                viewMode === 'grid' ? 'bg-white shadow-xs text-blue-600' : 'text-gray-600'
+              className={`px-3 py-1 text-xs font-bold rounded-md transition ${
+                viewMode === 'grid' ? 'bg-purple-200 text-purple-950 border border-slate-900' : 'text-slate-600'
               }`}
             >
               Grid
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
-                viewMode === 'list' ? 'bg-white shadow-xs text-blue-600' : 'text-gray-600'
+              className={`px-3 py-1 text-xs font-bold rounded-md transition ${
+                viewMode === 'list' ? 'bg-purple-200 text-purple-950 border border-slate-900' : 'text-slate-600'
               }`}
             >
               List
@@ -174,21 +176,24 @@ export default function NotesPage() {
 
           <button
             onClick={openCreateModal}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-xs"
+            className="pixel-btn pixel-btn-mint px-4 py-2 text-xs"
           >
-            + Catatan Baru
+            + Tulis Catatan
           </button>
         </div>
       </div>
 
-      {/* Notes Content */}
+      {/* Notes Grid / List */}
       {loading ? (
-        <div className="text-center py-16 text-gray-400 text-sm">Memuat catatan...</div>
+        <div className="text-center py-16 font-pixel text-xs text-purple-700 animate-pulse">
+          MEMUAT CATATAN...
+        </div>
       ) : notes.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border border-dashed border-gray-300 p-8">
-          <h3 className="text-base font-medium text-gray-900">Belum Ada Catatan</h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Mulai buat catatan baru atau lakukan triage dari inbox untuk menyimpan referensi.
+        <div className="pixel-box text-center py-16 bg-white p-8">
+          <span className="text-3xl block mb-2">📖</span>
+          <h3 className="font-pixel text-xs text-slate-900">BELUM ADA CATATAN</h3>
+          <p className="text-xs text-slate-500 mt-2 font-medium">
+            Mulai tulis catatan pertama Anda atau lakukan triage dari inbox.
           </p>
         </div>
       ) : viewMode === 'grid' ? (
@@ -197,27 +202,30 @@ export default function NotesPage() {
             <div
               key={note.id}
               onClick={() => openEditModal(note)}
-              className="bg-white rounded-xl p-5 border border-gray-200 shadow-xs hover:shadow-md hover:border-blue-300 transition cursor-pointer flex flex-col justify-between"
+              className="pixel-box p-5 bg-white hover:bg-purple-50/40 cursor-pointer flex flex-col justify-between"
             >
               <div>
-                <h3 className="font-bold text-gray-900 text-base mb-2">{note.title}</h3>
-                <div className="text-sm text-gray-600 line-clamp-4 leading-relaxed whitespace-pre-wrap">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <h3 className="font-bold text-slate-900 text-base">{note.title}</h3>
+                  <span className="text-xs text-purple-600">✎</span>
+                </div>
+                <div className="text-xs text-slate-600 line-clamp-4 leading-relaxed font-medium whitespace-pre-wrap">
                   {note.content}
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+              <div className="mt-4 pt-3 border-t-2 border-slate-100 flex items-center justify-between">
                 <div className="flex flex-wrap gap-1">
                   {note.noteTags?.map(({ tag }) => (
                     <span
                       key={tag.id}
-                      className="px-2 py-0.5 text-[11px] font-medium bg-blue-50 text-blue-700 rounded-md"
+                      className="pixel-badge bg-pink-100 text-pink-900 text-[10px]"
                     >
                       #{tag.name}
                     </span>
                   ))}
                 </div>
-                <span className="text-xs text-gray-400">
+                <span className="text-[11px] font-bold text-slate-400">
                   {new Date(note.updatedAt).toLocaleDateString('id-ID', {
                     month: 'short',
                     day: 'numeric',
@@ -228,16 +236,16 @@ export default function NotesPage() {
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100 shadow-xs">
+        <div className="pixel-window bg-white divide-y-2 divide-slate-100">
           {notes.map((note) => (
             <div
               key={note.id}
               onClick={() => openEditModal(note)}
-              className="p-4 hover:bg-blue-50/50 transition cursor-pointer flex items-center justify-between gap-4"
+              className="p-4 hover:bg-purple-50 transition cursor-pointer flex items-center justify-between gap-4"
             >
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-900 text-sm truncate">{note.title}</h3>
-                <p className="text-xs text-gray-500 truncate mt-0.5">{note.content}</p>
+                <h3 className="font-bold text-slate-900 text-sm truncate">{note.title}</h3>
+                <p className="text-xs text-slate-500 truncate mt-0.5 font-medium">{note.content}</p>
               </div>
 
               <div className="flex items-center gap-3 shrink-0">
@@ -245,13 +253,13 @@ export default function NotesPage() {
                   {note.noteTags?.map(({ tag }) => (
                     <span
                       key={tag.id}
-                      className="px-2 py-0.5 text-[11px] font-medium bg-gray-100 text-gray-600 rounded"
+                      className="pixel-badge bg-purple-100 text-purple-900 text-[10px]"
                     >
                       #{tag.name}
                     </span>
                   ))}
                 </div>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs font-bold text-slate-400">
                   {new Date(note.updatedAt).toLocaleDateString('id-ID', {
                     month: 'short',
                     day: 'numeric',
@@ -263,31 +271,27 @@ export default function NotesPage() {
         </div>
       )}
 
-      {/* Modal Editor / Preview */}
+      {/* Pixel Modal: Editor Markdown */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full p-6 shadow-2xl flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
-              <h2 className="text-lg font-bold text-gray-900">
-                {activeNote ? 'Edit Catatan' : 'Catatan Baru'}
-              </h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <div className="pixel-window max-w-3xl w-full bg-white shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="pixel-titlebar bg-linear-to-r from-mint-200 via-yellow-200 to-pink-200">
+              <span className="font-pixel text-xs text-slate-900">
+                {activeNote ? '✎ EDIT NOTE.MD' : '★ NEW NOTE.MD'}
+              </span>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setPreviewMode(!previewMode)}
-                  className={`px-3 py-1 text-xs font-semibold rounded-md border transition ${
-                    previewMode
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300'
-                  }`}
+                  className="pixel-btn pixel-btn-yellow text-xs px-2.5 py-0.5"
                 >
-                  {previewMode ? 'Mode Edit' : 'Preview Markdown'}
+                  {previewMode ? 'Mode Edit' : 'Preview MD'}
                 </button>
                 {activeNote && (
                   <button
                     type="button"
                     onClick={() => handleDelete(activeNote.id)}
-                    className="text-xs text-red-600 px-2 py-1 hover:bg-red-50 rounded"
+                    className="pixel-btn pixel-btn-danger text-xs px-2 py-0.5"
                   >
                     Hapus
                   </button>
@@ -295,16 +299,16 @@ export default function NotesPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-600 text-xl font-bold ml-2"
+                  className="pixel-btn pixel-btn-danger text-xs px-2 py-0.5"
                 >
-                  &times;
+                  ✕
                 </button>
               </div>
             </div>
 
-            <form onSubmit={handleSave} className="flex-1 flex flex-col min-h-0 space-y-4">
+            <form onSubmit={handleSave} className="p-6 flex-1 flex flex-col min-h-0 space-y-4 bg-purple-50/20">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                <label className="block font-pixel text-[10px] text-slate-800 uppercase mb-1">
                   Judul Catatan *
                 </label>
                 <input
@@ -313,57 +317,57 @@ export default function NotesPage() {
                   placeholder="Judul catatan..."
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                  className="w-full pixel-input text-sm font-bold"
                 />
               </div>
 
               <div className="flex-1 flex flex-col min-h-0">
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Konten Catatan (Mendukung Markdown) *
+                <label className="block font-pixel text-[10px] text-slate-800 uppercase mb-1">
+                  Konten Catatan (Markdown) *
                 </label>
                 {previewMode ? (
-                  <div className="flex-1 p-4 bg-gray-50 border border-gray-200 rounded-lg overflow-y-auto min-h-[220px]">
+                  <div className="flex-1 p-4 bg-white border-2 border-slate-900 rounded-lg overflow-y-auto min-h-[220px] shadow-[inset_2px_2px_0px_#cbd5e1]">
                     {renderMarkdown(formData.content)}
                   </div>
                 ) : (
                   <textarea
                     required
                     rows="10"
-                    placeholder="Tulis catatan Anda di sini menggunakan sintaks Markdown (contoh: # Heading, - List, **Bold**)..."
+                    placeholder="Tulis catatan menggunakan Markdown (# Heading, - List, ``` Code, dll)..."
                     value={formData.content}
                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    className="flex-1 w-full p-3 border border-gray-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:outline-hidden resize-none min-h-[220px]"
+                    className="flex-1 w-full p-3 pixel-input text-xs font-mono resize-none min-h-[220px]"
                   ></textarea>
                 )}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Tags (Pisahkan dengan koma)
+                <label className="block font-pixel text-[10px] text-slate-800 uppercase mb-1">
+                  Tags (Pisahkan koma)
                 </label>
                 <input
                   type="text"
                   placeholder="ide, riset, arsitektur"
                   value={formData.tags}
                   onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                  className="w-full pixel-input text-sm"
                 />
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-gray-100">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t-2 border-slate-200">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                  className="pixel-btn pixel-btn-gray px-4 py-2 text-xs"
                 >
                   Tutup
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50"
+                  className="pixel-btn pixel-btn-purple px-5 py-2 text-xs"
                 >
-                  {submitting ? 'Menyimpan...' : 'Simpan Catatan'}
+                  {submitting ? 'Menyimpan...' : '⚡ Simpan Catatan'}
                 </button>
               </div>
             </form>

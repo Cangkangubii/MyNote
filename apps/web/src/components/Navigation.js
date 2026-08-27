@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import api, { removeToken } from '@/lib/api';
+import api, { getToken, removeToken } from '@/lib/api';
 
 export default function Navigation() {
   const pathname = usePathname();

@@ -16,15 +16,20 @@ export default function Navigation() {
 
   useEffect(() => {
     const fetchUser = async () => {
+      const token = getToken();
+      if (!token || pathname === '/login' || pathname === '/register') {
+        setUser(null);
+        return;
+      }
       try {
         const res = await api.get('/auth/me');
         setUser(res.data?.data?.user);
       } catch (err) {
-        // Not logged in
+        setUser(null);
       }
     };
     fetchUser();
-  }, []);
+  }, [pathname]);
 
   // Handle global search debounce
   useEffect(() => {

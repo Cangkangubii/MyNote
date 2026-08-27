@@ -1,5 +1,25 @@
 {
   "moduleFileExtensions": ["js", "json"],
   "rootDir": ".",
-  "testRegex": ".e2e-spec.js$"
+  "testRegex": ".e2e-spec.js$",
+  "transform": {
+    "^.+\\.js$": [
+      "@swc/jest",
+      {
+        "jsc": {
+          "parser": {
+            "syntax": "typescript",
+            "decorators": true
+          },
+          "transform": {
+            "legacyDecorator": true
+          },
+          "target": "es2022"
+        },
+        "module": {
+          "type": "commonjs"
+        }
+      }
+    ]
+  }
 }

@@ -8,10 +8,6 @@ const api = axios.create({
   withCredentials: true, // required for httpOnly refresh cookies
 });
 
-
-
-
-
 export const getToken = () => {
   if (typeof document === 'undefined') return null;
   const match = document.cookie.match(new RegExp('(^| )accessToken=([^;]+)'));
@@ -46,7 +42,8 @@ api.interceptors.response.use(
       !originalRequest._retry &&
       !originalRequest.url?.includes('/auth/login') &&
       !originalRequest.url?.includes('/auth/register') &&
-      !originalRequest.url?.includes('/auth/refresh')
+      !originalRequest.url?.includes('/auth/refresh') &&
+      !originalRequest.url?.includes('/auth/me')
     ) {
       originalRequest._retry = true;
       try {
@@ -63,7 +60,12 @@ api.interceptors.response.use(
         }
       } catch (refreshErr) {
         removeToken();
-        if (typeof window !== 'undefined') {
+        if (
+          typeof window !== 'undefined' &&
+          window.location.pathname !== '/login' &&
+          window.location.pathname !== '/register' &&
+          window.location.pathname !== '/'
+        ) {
           // eslint-disable-next-line @next/next/no-location-assign-relative-destination
           window.location.href = '/login';
         }
@@ -75,7 +77,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-
-
-
-

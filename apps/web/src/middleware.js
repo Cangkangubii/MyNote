@@ -5,13 +5,13 @@ export function middleware(request) {
   const { pathname } = request.nextUrl;
 
   // Public routes that don't require authentication
-  const isPublicRoute = pathname === '/login' || pathname === '/register';
+  const isPublicRoute = pathname === '/' || pathname === '/login' || pathname === '/register';
 
   if (!token && !isPublicRoute) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (token && isPublicRoute) {
+  if (token && (pathname === '/login' || pathname === '/register')) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 

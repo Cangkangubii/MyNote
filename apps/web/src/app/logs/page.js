@@ -47,12 +47,15 @@ export default function LogsPage() {
 
     setSubmitting(true);
     setSuccessMsg('');
-
     try {
-      await api.put('/logs/today', formData);
-      setSuccessMsg('Log hari ini berhasil disimpan!');
+      await api.put('/logs/today', {
+        did: formData.did.trim(),
+        blockers: formData.blockers.trim() || undefined,
+        next: formData.next.trim() || undefined,
+      });
+      setSuccessMsg('✓ Log harian berhasil disimpan!');
+      setTimeout(() => setSuccessMsg(''), 4000);
       fetchData();
-      setTimeout(() => setSuccessMsg(''), 3000);
     } catch (err) {
       alert(err.response?.data?.message || 'Gagal menyimpan log harian.');
     } finally {
@@ -61,150 +64,168 @@ export default function LogsPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Header & Streak Badge */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Daily Logs &amp; Standup</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Catat ringkasan pekerjaan, kendala, dan rencana harian secara konsisten.
-          </p>
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+      {/* Streak Header Card */}
+      <div className="pixel-window bg-white">
+        <div className="pixel-titlebar bg-linear-to-r from-pink-200 via-rose-200 to-yellow-200">
+          <span className="font-pixel text-[11px] text-slate-900">
+            🔥 STREAK PROTOCOL &amp; DAILY LOG
+          </span>
+          <div className="flex items-center gap-1">
+            <span className="w-2.5 h-2.5 bg-yellow-300 border border-slate-900 rounded-xs inline-block"></span>
+            <span className="w-2.5 h-2.5 bg-pink-400 border border-slate-900 rounded-xs inline-block"></span>
+          </div>
         </div>
 
-        {/* Streak Counter Badge */}
-        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex items-center gap-3">
-          <div className="text-center">
-            <span className="block text-2xl font-extrabold text-amber-700">
-              {streakData.streak}
-            </span>
-            <span className="text-[11px] font-semibold text-amber-800 uppercase tracking-wider">
-              Hari Streak
-            </span>
+        <div className="p-6 bg-linear-to-br from-rose-50/60 to-orange-50/40 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="space-y-1 text-center sm:text-left">
+            <h1 className="font-pixel text-base text-slate-900">Jurnal Refleksi Harian</h1>
+            <p className="text-xs text-slate-600">
+              Isi apa yang telah Anda kerjakan, kendala, dan rencana langkah selanjutnya.
+            </p>
           </div>
-          <div className="text-xs text-amber-700 border-l border-amber-200 pl-3">
-            {streakData.hasLoggedToday ? (
-              <span className="font-semibold text-emerald-700">✓ Sudah diisi hari ini</span>
-            ) : (
-              <span className="font-semibold text-amber-900">Belum diisi hari ini</span>
-            )}
+
+          {/* Retro Level Streak Badge */}
+          <div className="pixel-box p-4 bg-white border-2 border-slate-900 flex items-center gap-4 shrink-0 shadow-[4px_4px_0px_#0f172a]">
+            <span className="text-3xl">🔥</span>
+            <div>
+              <div className="font-pixel text-2xl text-slate-900">
+                {streakData.streak}
+              </div>
+              <div className="text-[11px] font-bold text-rose-700 uppercase">
+                Hari Berturut-turut
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Form Log Hari Ini */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-xs mb-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-bold text-gray-900">
-            Jurnal Hari Ini ({new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })})
-          </h2>
-          {successMsg && (
-            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded">
-              {successMsg}
-            </span>
-          )}
+      <div className="pixel-window bg-white">
+        <div className="pixel-titlebar bg-linear-to-r from-purple-200 to-indigo-200">
+          <span className="font-pixel text-[10px] text-slate-900">
+            ☕ STANDUP JOURNAL - {new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}
+          </span>
         </div>
 
-        <form onSubmit={handleSaveToday} className="space-y-4">
+        <form onSubmit={handleSaveToday} className="p-6 space-y-4 bg-purple-50/20">
+          {successMsg && (
+            <div className="pixel-badge bg-emerald-100 text-emerald-900 p-2 block w-full text-xs font-bold">
+              {successMsg}
+            </div>
+          )}
+
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-              Apa yang sudah dikerjakan hari ini? (Did) *
+            <label className="block font-pixel text-[10px] text-slate-800 uppercase mb-1">
+              1. Apa yang telah Anda selesaikan hari ini? (Did) *
             </label>
             <textarea
               required
               rows="3"
-              placeholder="- Menyelesaikan endpoint login&#10;- Merapikan konfigurasi database"
+              placeholder="- Menyelesaikan fitur inbox&#10;- Merapikan modul notes"
               value={formData.did}
               onChange={(e) => setFormData({ ...formData, did: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+              className="w-full pixel-input text-xs font-mono"
             ></textarea>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                Kendala yang dihadapi (Blockers)
-              </label>
-              <textarea
-                rows="2"
-                placeholder="Misal: Menunggu persetujuan API dari pihak ketiga..."
-                value={formData.blockers}
-                onChange={(e) => setFormData({ ...formData, blockers: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
-              ></textarea>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                Rencana selanjutnya (Next)
-              </label>
-              <textarea
-                rows="2"
-                placeholder="Misal: Melanjutkan pengujian modul integrasi..."
-                value={formData.next}
-                onChange={(e) => setFormData({ ...formData, next: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
-              ></textarea>
-            </div>
+          <div>
+            <label className="block font-pixel text-[10px] text-slate-800 uppercase mb-1">
+              2. Apakah ada kendala / hambatan? (Blockers)
+            </label>
+            <textarea
+              rows="2"
+              placeholder="- Menunggu review PR atau masalah dependensi..."
+              value={formData.blockers}
+              onChange={(e) => setFormData({ ...formData, blockers: e.target.value })}
+              className="w-full pixel-input text-xs font-mono"
+            ></textarea>
           </div>
 
-          <div className="flex justify-end pt-2">
+          <div>
+            <label className="block font-pixel text-[10px] text-slate-800 uppercase mb-1">
+              3. Apa rencana berikutnya besok? (Next)
+            </label>
+            <textarea
+              rows="2"
+              placeholder="- Pengujian E2E dan penulisan dokumentasi..."
+              value={formData.next}
+              onChange={(e) => setFormData({ ...formData, next: e.target.value })}
+              className="w-full pixel-input text-xs font-mono"
+            ></textarea>
+          </div>
+
+          <div className="pt-2 flex justify-end">
             <button
               type="submit"
               disabled={submitting || !formData.did.trim()}
-              className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50"
+              className="pixel-btn pixel-btn-purple px-6 py-2.5 text-xs"
             >
-              {submitting ? 'Menyimpan...' : 'Simpan Log Hari Ini'}
+              {submitting ? 'Menyimpan...' : '⚡ Simpan Log Hari Ini'}
             </button>
           </div>
         </form>
       </div>
 
-      {/* Historical Feed */}
-      <div>
-        <h2 className="text-base font-bold text-gray-900 mb-4">Riwayat Log Terdahulu</h2>
+      {/* Historical Logs Timeline Feed */}
+      <div className="space-y-4">
+        <div className="inline-flex items-center gap-2">
+          <span className="font-pixel text-xs text-purple-900">
+            RIWAYAT LOG SEBELUMNYA
+          </span>
+          <span className="pixel-badge bg-purple-200 text-purple-900">
+            {logs.length}
+          </span>
+        </div>
 
         {loading ? (
-          <div className="text-center py-12 text-gray-400 text-sm">Memuat riwayat log...</div>
+          <div className="text-center py-12 font-pixel text-xs text-purple-700 animate-pulse">
+            MEMUAT RIWAYAT LOG...
+          </div>
         ) : logs.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300 p-6 text-sm text-gray-500">
-            Belum ada catatan log harian. Mulai catat aktivitas hari ini di formulir atas.
+          <div className="pixel-box text-center py-12 bg-white p-6">
+            <span className="text-2xl block mb-2">📜</span>
+            <p className="text-xs text-slate-500 font-bold">Belum ada riwayat catatan harian sebelumnya.</p>
           </div>
         ) : (
           <div className="space-y-4">
             {logs.map((log) => (
-              <div key={log.id} className="bg-white rounded-xl border border-gray-200 p-5 shadow-xs">
-                <div className="font-semibold text-sm text-blue-800 mb-3">
-                  {new Date(log.logDate).toLocaleDateString('id-ID', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+              <div key={log.id} className="pixel-window bg-white">
+                <div className="pixel-titlebar bg-slate-100">
+                  <span className="font-pixel text-[10px] text-slate-800">
+                    📅 {new Date(log.logDate).toLocaleDateString('id-ID', { dateStyle: 'full' })}
+                  </span>
                 </div>
 
-                <div className="space-y-2 text-sm">
+                <div className="p-5 space-y-3 text-xs bg-white">
                   <div>
-                    <span className="font-semibold text-xs text-gray-500 uppercase tracking-wider block">
-                      Dikerjakan:
-                    </span>
-                    <p className="text-gray-800 whitespace-pre-wrap mt-0.5">{log.did}</p>
+                    <h4 className="font-bold text-slate-900 uppercase text-[10px] text-purple-800 mb-1">
+                      Pekerjaan Selesai (Did):
+                    </h4>
+                    <div className="text-slate-800 whitespace-pre-wrap font-mono pl-2 border-l-2 border-purple-300">
+                      {log.did}
+                    </div>
                   </div>
 
                   {log.blockers && (
-                    <div className="pt-2 border-t border-gray-100">
-                      <span className="font-semibold text-xs text-rose-600 uppercase tracking-wider block">
-                        Kendala:
-                      </span>
-                      <p className="text-gray-700 whitespace-pre-wrap mt-0.5">{log.blockers}</p>
+                    <div>
+                      <h4 className="font-bold text-slate-900 uppercase text-[10px] text-rose-800 mb-1">
+                        Kendala (Blockers):
+                      </h4>
+                      <div className="text-slate-800 whitespace-pre-wrap font-mono pl-2 border-l-2 border-rose-300">
+                        {log.blockers}
+                      </div>
                     </div>
                   )}
 
                   {log.next && (
-                    <div className="pt-2 border-t border-gray-100">
-                      <span className="font-semibold text-xs text-emerald-600 uppercase tracking-wider block">
-                        Langkah Selanjutnya:
-                      </span>
-                      <p className="text-gray-700 whitespace-pre-wrap mt-0.5">{log.next}</p>
+                    <div>
+                      <h4 className="font-bold text-slate-900 uppercase text-[10px] text-emerald-800 mb-1">
+                        Langkah Selanjutnya (Next):
+                      </h4>
+                      <div className="text-slate-800 whitespace-pre-wrap font-mono pl-2 border-l-2 border-emerald-300">
+                        {log.next}
+                      </div>
                     </div>
                   )}
                 </div>
